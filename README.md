@@ -14,12 +14,6 @@ Our paper is accepted by **ECCV-2024**
 
 ---
 
-**Results**
-
-<div align=center>  <img src="figures/results.png" alt="Teaser" width="800" align="bottom" /> </div>
-
-
-
 This repository contains the official PyTorch implementation of the following paper:
 
 > **ActionVOS: Actions as Prompts for Video Object Segmentation**<br>
