@@ -1,8 +1,6 @@
-ActionVOS: Actions as Prompts for Video Object Segmentation
-<!-- ---
-[![arXiv](https://img.shields.io/badge/arXiv-2403.04381-DodgerBlue.svg?style=plastic)](https://arxiv.org/pdf/2403.04381.pdf) -->
+**ActionVOS: Actions as Prompts for Video Object Segmentation**
 
-Our paper is accepted by **ECCV-2024**
+Our [paper](https://arxiv.org/abs/2407.07402) is accepted by **ECCV-2024** as [**oral**](https://eccv.ecva.net/virtual/2024/oral/1604) presentation! 
 
 <div align=center>  <img src="figures/ActionVOS.png" alt="ActionVOS" width="500" align="bottom" /> </div>
 
@@ -20,43 +18,125 @@ This repository contains the official PyTorch implementation of the following pa
 Liangyang Ouyang, Ruicong Liu, Yifei Huang, Ryosuke Furuta, and Yoichi Sato<br> <!-- >  https://arxiv.org/abs/  -->
 > 
 >**Abstract:**  
+Delving into the realm of egocentric vision, the advancement of referring video object segmentation (RVOS) stands as pivotal in understanding human activities. However, existing RVOS task primarily relies on static attributes such as object names to segment target objects, posing challenges in distinguishing target objects from background objects and in identifying objects undergoing state changes. To address these problems, this work proposes a novel action-aware RVOS setting called ActionVOS, aiming at segmenting only active objects in egocentric videos using human actions as a key language prompt. This is because human actions precisely describe the behavior of humans, thereby helping to identify the objects truly involved in the interaction and to understand possible state changes. We also build a method tailored to work under this specific setting. Specifically, we develop an action-aware labeling module with an efficient action-guided focal loss. Such designs enable ActionVOS model to prioritize active objects with existing readily-available annotations. Experimental results on VISOR dataset reveal that ActionVOS significantly reduces the mis-segmentation of inactive objects, confirming that actions help the ActionVOS model understand objects' involvement. Further evaluations on VOST and VSCOS datasets show that the novel ActionVOS setting enhances segmentation performance when encountering challenging circumstances involving object state changes.
 
 ## Resources
 
 Material related to our paper is available via the following links:
 
-- Paper: 
-- Code: https://github.com/ut-vision/ActionVOS
-- VISOR dataset: https://epic-kitchens.github.io/VISOR/
-- VOST dataset: https://www.vostdataset.org/data.html
-- VSCOS dataset: https://github.com/venom12138/VSCOS
-- ReferFormer Model: https://github.com/wjn922/ReferFormer
+- [**Paper**](https://arxiv.org/abs/2407.07402)
+- [**Video**](https://youtu.be/dt-zDQKzq1I)
+- [VISOR dataset](https://epic-kitchens.github.io/VISOR/)
+- [VOST dataset](https://www.vostdataset.org/data.html)
+- [VSCOS dataset](https://github.com/venom12138/VSCOS)
+- [ReferFormer Model](https://github.com/wjn922/ReferFormer)
 
 ## Requirements
 
 * Our experiment is tested with Python 3.8, PyTorch 1.11.0. 
+* Our experiment with RerferFormer used 4 V100 GPUs, and 6-12 hours for train 6 epochs on VISOR.
 
 ## Playing with ActionVOS
 
-### Data preparation
+### **Data preparation (Pseudo-labeling and Weight-generation)**
 
-### Training
+For the videos and masks, please download VISOR-VOS,VSCOS,VOST dataset from these links. We recommend to download VISOR-VOS first since we use VISOR-VOS for both training and testing.
 
-### Inference
+- [**VISOR-VOS (28.4GB)**](https://data.bris.ac.uk/data/dataset/2v6cgv1x04ol22qp9rm9x2j6a7)
+- [VSCOS (20GB)](https://github.com/venom12138/VSCOS)
+- [VOST (50GB)](https://www.vostdataset.org/data.html)
+
+[Action narration annotations](./annotations/EPIC_100_train.csv) are obtained from [EK-100](https://github.com/epic-kitchens/epic-kitchens-100-annotations). (We already put them in this repository so you don't need to download it.)
+
+[Hand-object annotations](./annotations/visor_hos_train.json) are obtained from [VISOR-HOS](https://github.com/epic-kitchens/VISOR-HOS). (We already put them in this repository so you don't need to download it.)
+
+Then run data_prepare_visor.py to get data,annotation,action-aware pseudo-labels and action-guided weights for ActionVOS.
+
+```
+python data_prepare_visor.py --VISOR_PATH your_visor_epick_path
+```
+
+It takes 1-2 hours for processing data. After that, the folder dataset_visor will get structure of:
+
+```
+- dataset_visor
+    - Annotations_Sparse
+        - train
+            - 00000001_xxx
+              - obj_masks.png
+            - 00000002_xxx
+        - val      
+    - JPEGImages_Sparse
+        - train
+            - 00000001_xxx
+              - rgb_frames.jpg
+            - 00000002_xxx
+        - val
+    - Weights_Sparse
+        - train
+            - 00000001_xxx
+              - action-guided-weights.png
+            - 00000002_xxx
+        - val (not used)
+    - ImageSets
+        - train.json
+        - val.json
+        - val_human.json
+        - val_novel.json
+```
+
+There are 2 special files val_human.json and val_novel.json. These files contains the split that used for results in our experiments, where val_human contains the actions annotated by human, val_novel contains actions that unseen in the validation set.
+
+### **How to find action-aware pseudo labels**
+
+Check [train.json](./dataset_visor/ImageSets/train.json). For each object name in each video, the json file contains a map such as {"name": "food container", "class_id": 21, "handbox": 0, "narration": 1, "positive": 1}. 
+
+handbox = 1 for object mask intersects with hand-object bounding boxes. 
+
+narration = 1 for object name mentioned in action narration. 
+
+positive = 1 for pseudo positive object.
+
+Note that object masks under Annotations_Sparse are for all objects. We combine them with class labels in experiments.
+
+### **How to find action-guided weights**
+
+Each picture under Weights_Sparse is an action-guided weight. 
+
+<div align=center>  <img src="figures/weights.png" alt="weights" width="500" align="bottom" /> </div>
+
+**Picture:**  *Action-guided Weights*
+
+```
+3 (yellow) for negative obj mask.
+2 (green) for hand | narration obj mask. 
+4 (blue) for hand & narration obj mask.
+1 (red) for other areas
+```
+
+### **Training**
+
+ActionVOS is an action-aware setting for RVOS, and any RVOS model with an extra class head can be trained for ActionVOS. In our experiments, we take ReferFormer as the base RVOS model. Download the checkpoints from [ReferFormer](https://github.com/wjn922/ReferFormer).
+More instructions and modifications in training RF model are coming soon.
+
+### **Inference**
+
+More instructions and modifications in testing RF model are coming soon.
 
 ## Citation
 
 If this work or code is helpful in your research, please cite:
 
-<!-- ```latex
-@inproceedings{liu2024single,
- title = {Single-to-Dual-View Adaptation for Egocentric 3D Hand Pose Estimation},
- author = {Liu, Ruicong and Ohkawa, Takehiko and Zhang, Mingfang and Sato, Yoichi},
- booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
- pages = {0--0},
- year = {2024}
+```latex
+@article{ouyang2024actionvos,
+  title={ActionVOS: Actions as Prompts for Video Object Segmentation},
+  author={Ouyang, Liangyang and Liu, Ruicong and Huang, Yifei and Furuta, Ryosuke and Sato, Yoichi},
+  journal={arXiv preprint arXiv:2407.07402},
+  year={2024}
 }
-``` -->
+```
+
+If you are using the data and annotations from VISOR,VSCOS,VOST, please cite their original paper.
 
 ## Contact
 
