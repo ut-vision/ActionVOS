@@ -48,7 +48,7 @@ For the videos and masks, please download VISOR-VOS,VSCOS,VOST dataset from thes
 
 [Action narration annotations](./annotations/EPIC_100_train.csv) are obtained from [EK-100](https://github.com/epic-kitchens/epic-kitchens-100-annotations). (We already put them in this repository so you don't need to download it.)
 
-[Hand-object annotations](./annotations/visor_hos_train.json) are obtained from [VISOR-HOS](https://github.com/epic-kitchens/VISOR-HOS). (We already put them in this repository so you don't need to download it.)
+[Hand-object annotations](./annotations/visor_hos_train.json) are obtained from [VISOR-HOS](https://github.com/epic-kitchens/VISOR-HOS). (Please download from google drive [link1](https://drive.google.com/file/d/1Op-QtoweJ-2M0nuMqtbBHAsJ4Ep-g6nU/view?usp=sharing), [link2](https://drive.google.com/file/d/1KkQ-BOC4E0P087D2hyTN9eUxMmNPq_Ot/view?usp=sharing) and put them under /annotations.)
 
 Then run data_prepare_visor.py to get data,annotation,action-aware pseudo-labels and action-guided weights for ActionVOS.
 
