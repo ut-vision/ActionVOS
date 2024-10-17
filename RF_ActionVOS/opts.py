@@ -64,12 +64,12 @@ def get_args_parser():
     parser.add_argument('--freeze_text_encoder', action='store_true') # default: False
 
     # * Segmentation
-    parser.add_argument('--use_weights', action='store_true')
+    parser.add_argument('--use_weights', action='store_true', help="use action-guided weights for focal loss")
     parser.add_argument('--all_pos', action='store_true',
                         help="in training, keep all masks as positive")
     parser.add_argument('--use_positive_cls', action='store_true',
-                        help=" use extra positive classification if the flag is provided")
-    parser.add_argument('--pos_cls_thres', default=0.5, type=float, 
+                        help="use an extra positive classification head")
+    parser.add_argument('--pos_cls_thres', default=0.75, type=float, 
                         help="in inference, use positive classification results and the classification threshold")
     parser.add_argument('--masks', action='store_true',
                         help="Train segmentation head if the flag is provided")

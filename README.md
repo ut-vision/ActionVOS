@@ -1,4 +1,4 @@
-**ActionVOS: Actions as Prompts for Video Object Segmentation**
+<font size=5>**ActionVOS: Actions as Prompts for Video Object Segmentation**</font>
 
 Our [paper](https://arxiv.org/abs/2407.07402) is accepted by **ECCV-2024** as [**oral**](https://eccv.ecva.net/virtual/2024/oral/1604) presentation! 
 
