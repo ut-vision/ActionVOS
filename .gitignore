@@ -1,2 +1,9 @@
 annotations/visor_hos_train.json
 annotations/visor_hos_val.json
+dataset_visor/ImageSets/train.json
+dataset_visor/ImageSets/val.json
+dataset_visor/ImageSets/train_objects_category.json
+dataset_visor/ImageSets/val_objects_category.json
+dataset_visor/ImageSets/train_meta_expressions_promptaction.json
+dataset_visor/ImageSets/val_meta_expressions_promptaction.json
+ReferFormer/

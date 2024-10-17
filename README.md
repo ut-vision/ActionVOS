@@ -35,6 +35,7 @@ Material related to our paper is available via the following links:
 
 * Our experiment is tested with Python 3.8, PyTorch 1.11.0. 
 * Our experiment with RerferFormer used 4 V100 GPUs, and 6-12 hours for train 6 epochs on VISOR.
+* Check **Training** instructions for necessary packages of RF.
 
 ## Playing with ActionVOS
 
@@ -116,12 +117,77 @@ Each picture under Weights_Sparse is an action-guided weight.
 
 ### **Training**
 
-ActionVOS is an action-aware setting for RVOS, and any RVOS model with an extra class head can be trained for ActionVOS. In our experiments, we take ReferFormer as the base RVOS model. Download the checkpoints from [ReferFormer](https://github.com/wjn922/ReferFormer).
-More instructions and modifications in training RF model are coming soon.
+ActionVOS is an action-aware setting for RVOS, and any RVOS model with an extra class head can be trained for ActionVOS. In our experiments, we take ReferFormer-ResNet101 as the base RVOS model.
+
+Clone [ReferFormer](https://github.com/wjn922/ReferFormer) repository and download their [pretrained checkpoints](https://connecthkuhk-my.sharepoint.com/:u:/g/personal/wjn922_connect_hku_hk/EShgDd650nBBsfoNEiUbybcB84Ma5NydxOucISeCrZmzHw?e=YOSszd).
+```
+git clone https://github.com/wjn922/ReferFormer.git
+cd ReferFormer
+mkdir pretrained_weights
+download from the link
+```
+
+Install the necessary packages for ReferFormer.
+
+```
+cd ReferFormer
+pip install -r requirements.txt 
+pip install 'git+https://github.com/facebookresearch/fvcore' 
+pip install -U 'git+https://github.com/cocodataset/cocoapi.git#subdirectory=PythonAPI'
+cd models/ops
+python setup.py build install
+```
+
+Put modificated files to ReferFormer folders.
+
+```
+python copy_rf_actionvos_files.py
+```
+
+Run training scripts. If you want to change training configs, check [RF_ActionVOS/configs.md](RF_ActionVOS/configs.md). The following example shows training actionvos on a single GPU 0.
+
+```
+cd ReferFormer
+bash scripts/train_actionvos.sh actionvos_dirs/r101 pretrained_weights/r101_refytvos_joint.pth 1 0 29500 --backbone resnet101 --expression_file train_meta_expressions_promptaction.json --use_weights --actionvos_path ../dataset_visor --epochs 6 --lr_drop 3 5 --save_interval 3
+```
+
+After the training process, the weights will be saved to actionvos_dirs/r101/checkpoint.pth.
 
 ### **Inference**
 
-More instructions and modifications in testing RF model are coming soon.
+For quick start to ActionVOS models, we offer a trained RF-R101 checkpoint in [this link](https://drive.google.com/file/d/140gfK4GkI5iBSVFqoi_CAfL6d0J39nOW/view?usp=sharing).
+
+#### **Inference on VISOR**
+
+```
+cd ReferFormer
+bash scripts/test_actionvos.sh actionvos_dirs/r101 pretrained_weights/actionvos_rf_r101.pth 0 29500 --backbone resnet101 --expression_file val_meta_expressions_promptaction.json --use_positive_cls --pos_cls_thres 0.75 --actionvos_path ../dataset_visor
+```
+
+The output masks will be saved in ReferFormer/actionvos_dirs/r101/val.
+
+#### **Inference on your own videos and prompts**
+
+Change your videos and prompts into a actionvos_path like
+
+```
+- demo_path    
+    - JPEGImages_Sparse
+        - val
+            - video_name
+              - rgb_frames.jpg
+    - ImageSets
+        - expression_file.json
+```
+
+Check the [example json file](demo_path/ImageSets/expression_file.json) for the prompt formats.
+
+```
+cd ReferFormer
+bash scripts/test_actionvos.sh actionvos_dirs/demo pretrained_weights/actionvos_rf_r101.pth 0 29500 --backbone resnet101 --expression_file expression_file.json --use_positive_cls --pos_cls_thres 0.75 --actionvos_path ../demo_path
+```
+
+The output masks will be saved in ReferFormer/actionvos_dirs/demo/val.
 
 ## Citation
 
@@ -136,7 +202,10 @@ If this work or code is helpful in your research, please cite:
 }
 ```
 
-If you are using the data and annotations from VISOR,VSCOS,VOST, please cite their original paper.
+If you are using the data and annotations from [VISOR](https://proceedings.neurips.cc/paper_files/paper/2022/hash/590a7ebe0da1f262c80d0188f5c4c222-Abstract-Datasets_and_Benchmarks.html),[VSCOS](https://openaccess.thecvf.com/content/ICCV2023/html/Yu_Video_State-Changing_Object_Segmentation_ICCV_2023_paper.html),[VOST](https://openaccess.thecvf.com/content/CVPR2023/html/Tokmakov_Breaking_the_Object_in_Video_Object_Segmentation_CVPR_2023_paper.html), please cite their original paper.
+
+If you are using the training and inference code, please cite [ReferFormer](https://openaccess.thecvf.com/content/CVPR2022/html/Wu_Language_As_Queries_for_Referring_Video_Object_Segmentation_CVPR_2022_paper.html).
+
 
 ## Contact
 
