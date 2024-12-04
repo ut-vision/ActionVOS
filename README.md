@@ -1,10 +1,10 @@
 # **ActionVOS: Actions as Prompts for Video Object Segmentation**
 
-Our [paper](https://arxiv.org/abs/2407.07402) is accepted by **ECCV-2024** as [**oral**](https://eccv.ecva.net/virtual/2024/oral/1604) presentation! 
+Our [paper](https://arxiv.org/abs/2407.07402) is accepted by **ECCV-2024** as [**oral**](https://eccv.ecva.net/virtual/2024/oral/1604) **(2.3%)** presentation! 
 
 <div align=center>  <img src="figures/ActionVOS.png" alt="ActionVOS" width="500" align="bottom" /> </div>
 
-**Picture:**  *Overview of the proposed ActionVOS setting*
+**Picture:**  *Overview of the proposed ActionVOS setting.*
 
 <div align=center>  <img src="./figures/method.png" alt="method" width="800" align="center" /> </div>
 
@@ -210,17 +210,18 @@ If you correctly generated object masks by [this checkpoint](https://drive.googl
 If this work or code is helpful in your research, please cite:
 
 ```latex
-@article{ouyang2024actionvos,
+@inproceedings{ouyang2024actionvos,
   title={ActionVOS: Actions as Prompts for Video Object Segmentation},
   author={Ouyang, Liangyang and Liu, Ruicong and Huang, Yifei and Furuta, Ryosuke and Sato, Yoichi},
-  journal={arXiv preprint arXiv:2407.07402},
+  booktitle={European Conference on Computer Vision},
+  pages={216--235},
   year={2024}
 }
 ```
 
 If you are using the data and annotations from [VISOR](https://proceedings.neurips.cc/paper_files/paper/2022/hash/590a7ebe0da1f262c80d0188f5c4c222-Abstract-Datasets_and_Benchmarks.html),[VSCOS](https://openaccess.thecvf.com/content/ICCV2023/html/Yu_Video_State-Changing_Object_Segmentation_ICCV_2023_paper.html),[VOST](https://openaccess.thecvf.com/content/CVPR2023/html/Tokmakov_Breaking_the_Object_in_Video_Object_Segmentation_CVPR_2023_paper.html), please cite their original paper.
 
-If you are using the training and inference code, please cite [ReferFormer](https://openaccess.thecvf.com/content/CVPR2022/html/Wu_Language_As_Queries_for_Referring_Video_Object_Segmentation_CVPR_2022_paper.html).
+If you are using the training, inference and evaluation code, please cite [ReferFormer](https://openaccess.thecvf.com/content/CVPR2022/html/Wu_Language_As_Queries_for_Referring_Video_Object_Segmentation_CVPR_2022_paper.html) and [GRES](https://openaccess.thecvf.com/content/CVPR2023/html/Liu_GRES_Generalized_Referring_Expression_Segmentation_CVPR_2023_paper.html).
 
 
 ## Contact
