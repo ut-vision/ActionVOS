@@ -189,6 +189,22 @@ bash scripts/test_actionvos.sh actionvos_dirs/demo pretrained_weights/actionvos_
 
 The output masks will be saved in ReferFormer/actionvos_dirs/demo/val.
 
+#### **Evaluation Metrics**
+
+We use 6 metrics, p-mIoU, n-mIoU, p-cIoU, n-cIoU, gIoU and accuracy to evaluate ActionVOS performance on VISOR val_human split.
+
+```
+python actionvos_metrics.py --pred_path ReferFormer/actionvos_dirs/r101/val --gt_path dataset_visor/Annotations_Sparse/val --split_json dataset_visor/ImageSets/val_human.json
+```
+
+If you correctly generated object masks by [this checkpoint](https://drive.google.com/file/d/140gfK4GkI5iBSVFqoi_CAfL6d0J39nOW/view?usp=sharing), you should get results below:
+
+| Model | Split | p-mIoU | n-mIoU | p-cIoU | n-cIoU | gIoU | Acc |
+|----------|-----------|-----------|---------|-----------|-----------|---------|-----------|
+| [RF_R101](https://drive.google.com/file/d/140gfK4GkI5iBSVFqoi_CAfL6d0J39nOW/view?usp=sharing) | val_human* | 66.1 | 18.6 | 72.7 | 32.2 | 71.2 | 83.0 |
+
+\* Note that the val_human here only use 294 videos. Check [actionvos_metrics.py](actionvos_metrics.py) for details.
+
 ## Citation
 
 If this work or code is helpful in your research, please cite:
